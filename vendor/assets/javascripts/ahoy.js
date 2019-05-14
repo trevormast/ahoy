@@ -345,10 +345,17 @@
   };
 
   ahoy.trackClicks = function () {
+    // save the text of all <a> elements to a data attribute to ensure the original text is available after any translation
+    $('a').each(function() { $(this).data('original-text', $(this).text()); });
+
+    // save the text of all submit buttons to a data attribute to ensure the original text is available after any translation
+    $('input[type="submit"]').each(function() { $(this).data('original-text', $(this).val()); } );
+
     $(document).on("click", "a, button, input[type=submit]", function (e) {
       var $target = $(e.currentTarget);
       var properties = eventProperties(e);
-      properties.text = properties.tag == "input" ? $target.val() : $.trim($target.text().replace(/[\s\r\n]+/g, " "));
+      // get the text from the element's data-original-text attribute
+      properties.text = $.trim($target.data('original-text').replace(/[\s\r\n]+/g, " "));
       properties.href = $target.attr("href");
       ahoy.track("$click", properties);
     });
